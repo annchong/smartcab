@@ -85,7 +85,9 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set 'state' as a tuple of relevant data for the agent        
-        state = (waypoint,inputs)
+        reduced_inputs=inputs
+        del reduced_inputs['right']
+        state = (waypoint,reduced_inputs)
 
         return state
 
@@ -138,9 +140,8 @@ class LearningAgent(Agent):
         # Set the agent state and default action
         self.state = state
         self.next_waypoint = self.planner.next_waypoint()
-        #action = random.choice(self.env.valid_actions[0:])
-        #action = random.choice(self.env.valid_actions[0:])
-        action = random.choice([None,self.next_waypoint])
+        action = random.choice(self.env.valid_actions[0:])
+        #action = random.choice([None,self.next_waypoint])
 
         ########### 
         ## TO DO ##
@@ -162,18 +163,13 @@ class LearningAgent(Agent):
                 maxVal=max(actionsDict.values())
 
                 if maxVal>currentVal:
-                    if action==None:
-                        alt_action=self.next_waypoint
-                    else:
-                        alt_action=None
                     #new_choice=[None,self.next_waypoint].remove(action)
                     #alt_action=new_choice[0]
-                    if actionsDict[alt_action]==maxVal:
-                        action=alt_action
-                    else:
-                        for k in actionsDict:
-                            if actionsDict[k]==maxVal:
+                    
+                    for k in actionsDict:
+                        if actionsDict[k]==maxVal:
                                 action=k
+
         return action
 
 
@@ -189,8 +185,9 @@ class LearningAgent(Agent):
         #   Use only the learning rate 'alpha' (do not use the discount factor 'gamma')
         # AC - interpretation of value iteration update rule:
         #   updated Q value = initial Q value * (1-alpha) + alpha * (immediate reward)
-        currentQ=self.Q[str(state)][action]
-        self.Q[str(state)][action]=currentQ*(self.alpha)+self.alpha*reward
+        if self.learning==True: # update only when agent is learning
+            currentQ=self.Q[str(state)][action]
+            self.Q[str(state)][action]=currentQ*(1-self.alpha)+self.alpha*reward
 
         #currentQ=self.Q[str(state)][str(action)]
         #self.Q[str(state)][str(action)]=currentQ*(self.alpha)+self.alpha*reward
