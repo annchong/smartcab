@@ -103,6 +103,7 @@ class LearningAgent(Agent):
         if str(state) in self.Q.values():
             optionsDict=self.Q[str(state)]
             maxQ = max(optionsDict.values())
+            #maxQ=max(self.Q[state].values())
         else:
             maxQ=0
 
@@ -166,9 +167,12 @@ class LearningAgent(Agent):
                     #new_choice=[None,self.next_waypoint].remove(action)
                     #alt_action=new_choice[0]
                     
+                    maxValList=[]
                     for k in actionsDict:
                         if actionsDict[k]==maxVal:
-                                action=k
+                            maxValList.append(k)
+                    
+                    action=random.choice(maxValList)
 
         return action
 
